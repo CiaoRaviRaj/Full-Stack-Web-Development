@@ -9,6 +9,7 @@ Design patterns are formalized best practices that the programmer can use to sol
         To Avoid it
             1. Make Object/Class a similar properties named as NullObjectName/NullClass. (Eg. NullUser)
             2.  Inside fetching function
+            
                 function getUser (id) {
                     const user = users.find(user => user.id === id) ;
                     if (user == null) {
@@ -381,4 +382,3 @@ Design patterns are formalized best practices that the programmer can use to sol
     calculator.executeCommand(new MultiplyCommand(10));
 
     calculator.undo()
-
