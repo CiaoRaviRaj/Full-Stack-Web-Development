@@ -91,7 +91,7 @@
 
 
     
-    <Outlet>// used to render child components using route condition.
+    <Outlet context={ "context to child route"  }>// used to render child components using route condition.
     <NavLink> // is used to show or style active state
     *  react router Form
         //client side routing
@@ -456,7 +456,7 @@
 
 
 
-#redux 
+* #redux 
   • Action
        File with export function
           export const actionName=(props)=>{
@@ -630,3 +630,43 @@
 
 
 #fetchAPI
+
+* #Formik and Yup
+  * Formik is use to form handling
+    * import {useFormik} from "formik"
+    * const Formik = useFormik(
+      initialValues: initalValues,
+      onSubmit: (values, action) => {
+        ""
+        values
+        action.resetForm();
+      }
+    )
+    * all handle need value
+      * Formik.values.name
+      * const {values , errors, touch handleChange , handleSubmit , handleBlur} = useFormik()
+      * {errors.name && touched.name ? <p>errors.name</p> : null}
+
+    * <element on
+  * Yup for validation
+    * import * as Yup from "yup"
+    * export const signUpSchema = Yup.object({
+      name: Yup.string().min(2).max(25).required("Please enter your name"),
+      email: Yup.string().email().required("please enter your email"),
+      password: Yup.string().min(6).required("please your password"),
+      confirm_password: Yup.string().min(6).oneOf([Yup.ref("password"), null], "password not match"),
+
+    })
+    * const Formik = useFormik({
+      // all code same 
+      validationSchema: signUpSchema
+    })
+
+* #react-toastify
+  * npm i react-toastify
+  * import { ToastContainer , toast} from "react-toastify"
+  * toast : for individual notification
+  * import "react-toastify/dist/ReactToastify.css
+  * <ToastContainer /> at the end 
+  * style can be do in it playground that they providing
+    * theme: "dark"
