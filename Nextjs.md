@@ -1,4 +1,4 @@
-l#Next js 
+# Next js 
 * Introduction 
     * It is javascript framework for production.
     * It helps in SEO.
@@ -179,6 +179,8 @@ l#Next js
             <layoutFilename> 
                 <Component {...pageProps} />
             </layoutFilename>
+    * for specific layout 
+
 
 
 *   styling 
@@ -186,6 +188,7 @@ l#Next js
     * home.module.css 
         style.class/id
     * 
+
 
 
 * Pre Rendering
@@ -208,13 +211,13 @@ l#Next js
                     } 
                     if(!blog) {
                         return {
-                            notFound: true
+                            notFound: true // not found data
                         }
                     }
                     return {
                         props: {
                             blogData:  blogs
-                            revalidate: 10
+                            revalidate: 10 //Incremental Static Regeneration 
                         }
                     }
                 }
@@ -278,6 +281,11 @@ l#Next js
             }
         }
         // it get data from server
+
+* Authentication 
+    * Authentication pattern
+        * SGP : 
+        * SSP : 
 
 * Dynamic import
     import dynamic from "next/dynamic"
@@ -430,10 +438,152 @@ l#Next js
 
     }
 
+
+
+* next js 13 
+    * how to change next js 13
+    * pages -> 
+        app 
+        * next.config.js {
+            experimental : {
+                appDir: true,
+            }
+        }
+        * tailiwind.config {
+            content: [
+                './app/**/*.{js,jsx,tsx}'
+            ]
+        }
+        app folder : pages
+        * layout {
+
+        }
+        * page.tsx {
+
+        }
+
+         * layout hierarchy 
+            * make a layout in folder 
+                * then it only change this layout data rest is same
+
+        * fetch (url , {cache: 'no-store' //SDR
+                        cache: 'force-cache' //SSR
+                        next: {
+                            revalidate: 60 // ISR
+                        }
+                        })
+        * export async function generateStaticParams() {
+            // SGP : getStaticPaths 
+            // not run in revalidation
+            // run once in 
+        }
+        * conditional checkout on data 
+            import {notFound} from "next/navigation"
+            * not-found {
+                if(!todo.id) {
+                    return notFound() // 404 page
+                }
+            }
+        * for components 
+            'use client' // it is use in client side not on server side
+            * it is not show change in server side page
+                * to show change in server side , we used 
+                    * const router = useRouter()
+                    * call router.refresh() after components change the serve data. // it re fetch data from api only not all page refresh
+            * 
+
+
+
     
 
     
      
 
 
+    * link components change
+    * turbo pack
+    * fetching components data separate
+        * default all function are SSR 
+        * external data fetch just using normal function
+        * loading.js // show on loading component on data fetch
+        * backEnd not writeable in app
+            * it is †
+
+    * Data Fetching props
+        * getStaticProps
+            * import { use } from react
+            * function pageName () {
+                const data = use(getData());
+                return data.map()...
+            }
+            * async function getData() {
+                return await (await fetch ("url" , {cache: "force-cache" // Default})).json() // get data in build
+            }
+        * getServerSideProps
+            * import {use} from react
+            *  async function getData() {
+                return await (await fetch ("url" , {cache : "no-store"})).json() // get data in build
+            }
+            * export default Serverpage () {
+                const data = use(getData());
+                return data
+            }
+        *   client side fetching
+            * "use client"
+            * import  third party data fetching app import useSWR "swr"
+            * import Link from "next/link"
+            * const fetcher = (path) => fetch(`url/${path`).then(res => res.json())
+            * export default function clientSide() {
+                const data = useSWR("urlPath",fetcher)
+
+                return data...
+            }
+            * getStaticPaths
+                * folder slug
+                * async function getData() {
+                    return await (await fetch("url")).json()
+                }
+                * export async function generatorStaticparams() {
+                    const characters = await getData();
+                    return charactors?.results.map ( c => {
+                        slug: c?.name.replace(/\s+/g, "-").toLowerCase();
+
+                    })
+                }
+                * export default function StaticPages ({params}) {
+                    return (
+                        <>
+                            <h1>The charactor name is: {params.slug}</h1>
+                        </>
+                    )
+                }
+
+
+* Rendering patterns
+    * static page
+    * dynamic page
+        * dynamic page 
+        * server
+            *  render one page and dynamic change data and render change data in browser like react do
+            * It is not good for SEO , all contents not render for first time.
+            * SSR (metaFrame )
+                * it need serve to fetch all data 
+            * SSG
+                * 
+                * it rebuild  all page in store in static server
+                * it hybrids javascript after render and then it revaluate and request and server build new build file , and then it's re render //ISG
+                * partial hydration
+                    * dynamic import 
+                    * island hydration
+                        * static html 
+                        * dynamic file only get js
+                        // astro 
+                    * Streaming SSR
+                        * load components in multiple chucks
+
+                    * Exclude hydration
+                        * REASUMABLITY
+                        * qwik
+                        * event listener in sync 
+                        * javascript in multiple chuck
 
