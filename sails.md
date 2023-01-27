@@ -44,6 +44,7 @@
         * local.js
         * log.js
         * models.js
+            * default model attributes
         * policies.js
         * routes.js
             * all routes
@@ -646,6 +647,35 @@
               if (err) return res.serverError(err);
               return res.ok();
             });
+    * internationalization
+        * build-in support for detecting user language and translate words and sentence accordingly.
+        * Usage 
+            * it translates according to locale specified in header request.
+                * req.setLocale(req.me.preferredLocale)
+            * it all setup in config/i18n.js file
+                * it read locale file from config/locales/es.json
+                    * it read json file
+                    * Eg: 
+                        {
+                            "Hello!": "Hola!",
+                            "Hello %s, how are you today?": "¿Hola %s, como estas?"
+                        }
+                * it been access in controllers and action policies by req.i18n() hook
+                * and in views __(key).
+            * we can also provide locale files using CND like(cloudfront)
+        
+    * Logging
+        * build-in console.log with extra feature
+        * warnings, errors, and other output
+            * silent -> N/A
+            * error -> console.log.error()
+            * warn -> 
+            * debug ->
+            * info ->
+            * verbose -> 
+            * silly -> 
+
+
     * middleware
         * it is function which take (req, res ,next) ,
         * it run next() function on place of next()
@@ -657,6 +687,554 @@
                 next() // it run all next function
                 log("after") // it run after next() function done
             }
+        * there are 4 level of middleware integration
+            * HTTP middleware—to apply code before every HTTP request
+            * Policies - to apply code before one or more controller actions
+            * Hooks with the routes feature implemented—to apply code before one or more route handlers
+            * Custom responses—to apply code after one or more controller actions
+        * HTTP
+            * it trigger on every http request
+            * similar to middleware function , it also have (req, res, next)
+            * it only work on http request , it totally ignore virtual requests (eg.live Socket.io connection )
+            * Configuring the HTTP middleware stack
+                * make a middleware function with(unique key eg: testMiddleware)
+                * add in middleware.order
+                * eg: 
+                    // config/http.js
+                    * module.exports.http = {
+                        * middleware: {
+                            * order: [
+                                'cookieParser'* ,
+                                'session'* 
+                                'passportInit'
+                                'passportSession'
+                                'bodyParser'
+                                'compress'
+                                'testMiddleware'
+                                ...
+                                'router'*
+                                'www'* 
+
+                            ]
+
+                         }
+                         // 
+                         * foobar: (function (){
+                              console.log('Initializing `foobar` (HTTP middleware)...');
+                              * return function (req,res,next) {
+                                console.log('Received HTTP request: '+req.method+' '+req.path);
+                                return next();
+                              };
+                            })(),
+                    }
+
+        * Express middleware as policies
+            * it is a middleware specific to a particular function
+            * all the setup done in
+                * config/policies.js
+                * eg: 
+                    * module.exports.policies = {
+                        * // Global
+                            * "*" : 'isLoggedIn' // it trigger on every route call
+                            * For multiple middleware
+                                * 'get/encrypted-data': ['isLoggedIn', 'isInValidRegion']
+                        * UserController: {
+                              * // By default, require requests to come from a logged-in user
+                              * // (runs the policy in api/policies/  isLoggedIn.js)
+                              '*': 'isLoggedIn', // * -> for all
+
+                              * // Only allow admin users to delete other users
+                              * // (runs the policy in api/policies/isAdmin.js)
+                              * 'delete': 'isAdmin',
+
+                              * // Allow anyone to access the login action,     even if they're not logged in.
+                              * 'login': true
+
+                            }
+                        * // Similarly stay-alone actions
+                            * 'user/*': 'isLoggedIn',
+                            * 'user/delete': 'isAdmin',
+                            * 'user/login': true
+
+                    };
+
+
+
+    * Models and ORM
+        * it provide pre-define function for doing CURD operation easier
+        * it is very fixable on using different database in different model.
+        * you can switch to different database on very little codebase change
+
+        * Database Agnosticism
+            * .populate()
+                * what to show
+                .populateAll()
+            * .query()
+                it is deprecated.
+                .sendNativeQuery()
+                * var rawResult = await datastore.sendNativeQuery(sql, valuesToEscape);
+            * .native()
+                * it is for mongoDB
+                * var db = Pet.getDatastore().manager;
+
+                * // Now we can do anything we could do with a Mongo `db` instance:
+                * var rawMongoCollection = db.collection(Pet.tableName);
+        * Scenario
+           
+            * Flexibility
+                * More then one type of database can be used it one project
+            * Compatibility
+                * multiple database can use in 
+            * Performance
+                * use appropriate database
+        * Adapters
+            * it give basic CRUD operation in easy method
+            * Eg: 
+                * User.find() // for anyData
+        * Datastore
+            * it store database config codes
+            * datastores: {
+                default: {
+                  // No need to set `adapter` again, because we already configured it in `config/datastores.js`.
+                  url: 'mysql://lkjdsf4a23d9xf4:kkwer4l8adsfasd@u23jrsdfsdf0sad.aasdfsdfsafd.us-west-2.ere.amazonaws.com:3306/ke9944a4x23423g',
+                }
+              },
+              existingEcommerceDb: {
+                adapter: require('sails-mysql'),
+               url: 'mysql://djbluegrass:0ldy3ll3r@legacy.example.com:3306/store',
+              },
+            * In model , we define this
+                * datastore: 'existingEcommerceDb'
+        * Association
+            * when a model has another model in it, this type of attributes is called association
+                * .addToCollection()
+                    * to add one or more existing child records
+                    * await User.addToCollection((parentId)(3), "pets"(association))
+                    .members((childIds)[99,98]);
+                * .removeFromCollection(parentId, association)
+                    .members(childIds);
+                * .replaceCollection(parentId, association)
+                    .members(childIds);
+            * Associations in retrieved records
+                * find, create, and ... function not work always
+                * instead use 
+                * .populate()
+                    * it return depended children data value
+                * var userWithPets = await User.findOne(123).populate('pets');
+            * Cross-adapter associations
+                * 
+            * Many-to-many
+                * The via key
+                    * this via indicates in attributes
+                        * 
+                * Using the User and Pet example, let’s look at how to build a schema where a User may have many Pet records and a Pet may have multiple owners.
+                    * api/model/User.js
+                        * module.exports = {
+                            attributes: {
+                                firstName: {
+                                    type: 'string'
+                                }
+                                ...
+                                pets: {
+                                  collection: 'pet',
+                                  via: 'owners'
+                                }
+                            }
+                        }
+                    * // api/models/Pet.js
+                        * module.exports = {
+                            attributes: {
+                                breed: {
+                                    type: 'string'
+                                }
+                                ...
+                                owners: {
+                                  collection: 'user',
+                                  via: 'pets'
+                                  // dependance attributes
+                                }
+                            }
+                        }
+                    * await User.addToCollection(10, 'pets', [300, 301]);
+                        // to add relational record
+                    * await User.removeFromCollection(10, 'pets', 300);
+                * dominant: true
+                    * it is force to use defined database to store join dataset 
+            * One way association
+                * api/models/Pet.js
+                    * module.exports = {
+                          attributes: {
+                            name: {
+                              type: 'string'
+                            },
+                            color: {
+                              type: 'string'
+                            }
+                          }
+                        }
+                * api/models/User.js
+                    * module.exports = {
+                      attributes: {
+                        name: {
+                          type: 'string'
+                        },
+                        age: {
+                          type: 'number'
+                        },
+                        pony:{
+                          model: 'Pet'
+                        }
+                      }
+                    }
+                * var usersWithPonies = await User.find({ name:'Mike' }).populate('pony');
+            * One-to-many
+                * A one-to-many association states that a model can be associated with many other models.
+                * a via key needed to the collection attribute. this states which model attribute on the side of the association is used to populate the record
+                * api/models/User.js
+                    //A user may have many pets
+                    * module.exports = {
+                      attributes: {
+                        firstName: {
+                          type: 'string'
+                        },
+                        lastName: {
+                          type: 'string'
+                        },
+                        // Add a reference to Pets
+                        pets: {
+                          collection: 'pet',
+                          via: 'owner'
+                        }
+                      }
+                    };
+                * api/models/Pet.js
+                    * // A pet may only belong to a single user
+                    * module.exports = {
+                      attributes: {
+                        breed: {
+                          type: 'string'
+                        },
+                        type: {
+                          type: 'string'
+                        },
+                        name: {
+                          type: 'string'
+                        },
+                        // Add a reference to User
+                        owner: {
+                          model: 'user'
+                        }
+                      }
+                    };
+                * 
+            * One-to-one
+                * A one-to-one association states that a model may only be associated with one other model.
+                * one of the records along with a unique database
+                * /api/models/Pet.js
+                    * module.exports = {
+                      attributes: {
+                        name: {
+                          type: 'string'
+                        },
+                        color: {
+                          type: 'string'
+                        },
+                        owner:{
+                          model:'user',
+                          unique: true
+                        }
+                      }
+                    }
+                * api/models/User.js
+                    * module.exports = {
+                      attributes: {
+                        name: {
+                          type: 'string'
+                        },
+                        age: {
+                          type: 'number'
+                        },
+                        pet: {
+                          collection:'pet',
+                          via: 'owner'
+                        }
+                      }
+                    }
+                * Has one manual sync
+                    * we add model attribute in both side to make populate method possible
+                    * otherwise only user can get
+            * Reflexive associations
+                * relationship between two attributes in the same model. This is called a reflexive association.
+                * /api/model/User.js
+                    * module.exports = {
+                      attributes: {
+                        firstName: {
+                          type: 'string'
+                        },
+                        lastName: {
+                          type: 'string'
+                        },
+                    
+                        // Add a singular reflexive association
+                        bestFriend: {
+                          model: 'user',
+                        },
+                    
+                        // Add one side of a plural reflexive association
+                        parents: {
+                          collection: 'user',
+                          via: 'children'
+                        },
+                    
+                        // Add the other side of a plural reflexive association
+                        children: {
+                          collection: 'user',
+                          via: 'parents'
+                        },
+                    
+                        // Add another plural reflexive association, this one via-less
+                        bookmarkedUsers: {
+                          collection: 'user'
+                        }
+                    
+                      }
+                    };
+                * Through associations
+                    * many-to-many through association is similar to many-to-many association except in many-to-many through association, join table is created automatically.
+                    * the through key is used to tell model to use define model instead of join table.
+                    * /api/models/User.js
+                        * module.exports = {
+                          attributes: {
+                            name: {
+                              type: 'string'
+                            },
+                            pets:{
+                              collection: 'pet',
+                              via: 'owner',
+                              // a new model 
+                              through: 'petuser'
+                            }
+                          }
+                        }
+                    * /api/models/Pet.js
+                        * module.exports = {
+                          attributes: {
+                            name: {
+                              type: 'string'
+                            },
+                            color: {
+                              type: 'string'
+                            },
+                            owners:{
+                              collection: 'user',
+                              via: 'pet',
+                              through: 'petuser'
+                            }
+                          }
+                        }
+                    * api/models/PetUser.js
+                        * module.exports = {
+                          attributes: {
+                            owner:{
+                              model:'user'
+                            },
+                            pet: {
+                              model: 'pet'
+                            }
+                          }
+                        } 
+        * Attributes
+            * Default attribute
+                * it could we change on config/models.js
+            * data type 
+                * string
+                * number
+                * boolean
+                * json
+                * ref
+            * required : true/false
+            * defaultsTo: "to give default value"
+            * allowNull: true // to allow null value
+            * Validations
+                * there are many in-build validators types
+                * isIn:  ['boring', 'too many emails', 'recipes too difficult', 'other'],
+                * custom validator
+                    * custom: function(value) {
+                        return _.isObject(value) &&
+                        _.isNumber(value.x) && _.isNumber(value.y) &&
+                        value.x !== Infinity && value.x !== -Infinity &&
+                        value.y !== Infinity && value.y !== -Infinity;
+                      }
+            * columnName
+                * to forcedly say sails to store this as name given
+                * columnName: 'number_of_round_rotating_things'
+            * Encryption at rest
+                * to store value in encrypted form
+                    * encrypt: true
+                * it is decrypt by using .decrypt()
+            * Automigrations
+                * it used to give migration
+            * columnType
+                * specificed formate to store in database
+                
+                * columnType: 'float'
+                * type is for validation
+            * autoIncrement
+                * when value is not specified that , it auto increment from most recent value
+                * type: 'number',
+                * autoIncrement: true
+            * unique
+                * it say unique among table
+                * unique: true
+            * 
+        * Errors
+            * 
+            * name 
+                * err.name === 'UsageError'
+                * err.name === 'AdapterError'
+                * err.code === 'E_UNIQUE'
+                * await User.create({ emailAddress: inputs.emailAddress })
+                    // Uniqueness constraint violation
+                    .intercept('E_UNIQUE', (err)=> {
+                      return 'emailAlreadyInUse';
+                    })
+            * message
+            * stack
+            * code
+                * err.code === 'E_UNIQUE'
+        * Lifecycle callbacks
+            * for every methods(.create()) , there are before and after associated method for it
+            * .create()
+                * beforeCreate: fn(recordToCreate, proceed) {
+                    ....
+                    return proceed()
+                }
+                * afterCreate: fn(newlyCreatedRecord, proceed)
+        * Model settings
+            * Changing default model settings
+                * it is all setup in sails.config.models. file
+            * Overriding settings for a particular model
+                * fetchRecordsOnUpdate: true
+                    * return updated change records'
+            * Choosing an approach
+                * 
+            * customToJSON
+                * A function that allows you to customize the way a model's records are serialized to JSON.
+                * customToJSON: function() {
+                  // Return a shallow copy of this record with the password and ssn removed.
+                  return _.omit(this, ['password', 'ssn'])
+                }
+            * tableName
+                * to specified collection / table name for it.
+            * migrate
+                * alter
+                * drop
+                * safe
+            * schema 
+                * Whether or not a model expects records to conform to a specific set of attributes.
+                * it force to follow schema
+            * datastore
+                * it specified the database used for model
+                * datastore: 'legacyECommerceDb'
+            * dataEncryptionKeys
+                * dataEncryptionKeys: {
+                  default: 'DZ7MslaooGub3pS/0O734yeyPTAeZtd0Lrgeswwlt0s=',
+                  * //Key rotation 
+                    // it rotated key year to year(change default key time to time)
+                  '2028': 'C5QAkA46HD9pK0m7293V2CzEVlJeSUXgwmxBAQVj+xU='
+                }
+            * cascadeOnDestroy
+                * 
+            * dontUseObjectIds
+                * If set to true, the model will not use an auto-generated MongoDB ObjectID 
+            *  
+        * Models
+            *  Defining models
+                *   api/models/ModelName.js
+            * Using models
+            * Query methods
+                * async/await is used to Database processes
+            * Custom model methods
+                * findWithSameNameAsPerson: async function (opts) {
+                    var person = await Person.findOne({ id: opts.id });
+                    if (!person) {
+                        throw require('flaverr')({
+                      message: `Cannot find monkeys with the same name as the person w/ id=${opts.id} because that person does not exist.`,
+                      code: 'E_UNKNOWN_PERSON'
+                    });
+                    }
+                    return await Monkey.find({ name: person.name });
+                }
+                * var monkeys = await Monkey.findWithSameNameAsPerson({id:37});
+        * Query language basics
+            * var thirdPageOfRecentPeopleNamedMary = await Model.find({
+                  where: { name: 'mary' },
+                  skip: 20,
+                  limit: 10,
+                  sort: 'createdAt DESC'
+                });
+            * Key pairs
+                * var peopleNamedLyra = await Model.find({
+                  name: 'lyra'
+                });
+            * Complex constraints
+                * var peoplePossiblyNamedLyra = await Model.find({
+                  name : {
+                    'contains' : 'yra'
+                  }
+                });
+            * In modifier
+                * var waltersAndSkylers = await Model.find({
+                  name : ['walter', 'skyler']
+                });
+            * Not-in modifier
+                * var everyoneExceptWaltersAndSkylers = await Model.find({
+                  name: { '!=' : ['walter', 'skyler'] }
+                });
+            * Or predicate
+                * Use the or modifier to match any of the nested rulesets
+                * var waltersAndTeachers = await Model.find({
+                  or : [
+                    { name: 'walter' },
+                    { occupation: 'teacher' }
+                  ]
+                });
+            * Criteria modifiers
+                * '<'
+                * '<='
+                * '>'
+                * '>='
+                * '!='
+                * nin
+                * in
+                * contains
+                * startsWith
+                * endsWith
+                * Model.find({
+                  age: { '<': 30 }
+                });
+            * Sort
+                * ASC or DESC flag
+                * Model.find({ where: { name: 'foo' }, sort: 'name DESC' });
+                * Model.find({ where: { name: 'foo' }, sort: [{ name:  'ASC'}, { age: 'DESC' }] });
+        * Records
+            * it get back on find and finOne
+            * it return in dictionaries customToJSON model setting
+            * var orders = await Order.find()
+                .populate('buyers')  // a "collection" association
+                .populate('seller');  // a "model" association
+            * 
+
+
+                
+
+
+                    
+                    
+
+
+
+
                         
 
     
@@ -666,4 +1244,4 @@
              
 
                 
-                
+    *       

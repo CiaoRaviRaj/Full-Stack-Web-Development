@@ -374,7 +374,7 @@
     • parse(), stringify()
     •
 
-- Data Type method
+* Data Type method
   • Primitive data type method
   • str.toUpperCase()
   • str.toLowerCase
