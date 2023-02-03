@@ -1166,64 +1166,90 @@
                     return await Monkey.find({ name: person.name });
                 }
                 * var monkeys = await Monkey.findWithSameNameAsPerson({id:37});
-        * Query language basics
-            * var thirdPageOfRecentPeopleNamedMary = await Model.find({
-                  where: { name: 'mary' },
-                  skip: 20,
-                  limit: 10,
-                  sort: 'createdAt DESC'
-                });
-            * Key pairs
-                * var peopleNamedLyra = await Model.find({
-                  name: 'lyra'
-                });
-            * Complex constraints
-                * var peoplePossiblyNamedLyra = await Model.find({
-                  name : {
-                    'contains' : 'yra'
-                  }
-                });
-            * In modifier
-                * var waltersAndSkylers = await Model.find({
-                  name : ['walter', 'skyler']
-                });
-            * Not-in modifier
-                * var everyoneExceptWaltersAndSkylers = await Model.find({
-                  name: { '!=' : ['walter', 'skyler'] }
-                });
-            * Or predicate
-                * Use the or modifier to match any of the nested rulesets
-                * var waltersAndTeachers = await Model.find({
-                  or : [
-                    { name: 'walter' },
-                    { occupation: 'teacher' }
-                  ]
-                });
-            * Criteria modifiers
-                * '<'
-                * '<='
-                * '>'
-                * '>='
-                * '!='
-                * nin
-                * in
-                * contains
-                * startsWith
-                * endsWith
-                * Model.find({
-                  age: { '<': 30 }
-                });
-            * Sort
-                * ASC or DESC flag
-                * Model.find({ where: { name: 'foo' }, sort: 'name DESC' });
-                * Model.find({ where: { name: 'foo' }, sort: [{ name:  'ASC'}, { age: 'DESC' }] });
-        * Records
-            * it get back on find and finOne
-            * it return in dictionaries customToJSON model setting
-            * var orders = await Order.find()
-                .populate('buyers')  // a "collection" association
-                .populate('seller');  // a "model" association
-            * 
+            * Query language basics
+                * var thirdPageOfRecentPeopleNamedMary = await Model.find({
+                      where: { name: 'mary' },
+                      skip: 20,
+                      limit: 10,
+                      sort: 'createdAt DESC'
+                    });
+                * Key pairs
+                    * var peopleNamedLyra = await Model.find({
+                      name: 'lyra'
+                    });
+                * Complex constraints
+                    * var peoplePossiblyNamedLyra = await Model.find({
+                      name : {
+                        'contains' : 'yra'
+                      }
+                    });
+                * In modifier
+                    * var waltersAndSkylers = await Model.find({
+                      name : ['walter', 'skyler']
+                    });
+                * Not-in modifier
+                    * var everyoneExceptWaltersAndSkylers = await Model.find({
+                      name: { '!=' : ['walter', 'skyler'] }
+                    });
+                * Or predicate
+                    * Use the or modifier to match any of the nested rulesets
+                    * var waltersAndTeachers = await Model.find({
+                      or : [
+                        { name: 'walter' },
+                        { occupation: 'teacher' }
+                      ]
+                    });
+                * Criteria modifiers
+                    * '<'
+                    * '<='
+                    * '>'
+                    * '>='
+                    * '!='
+                    * nin
+                    * in
+                    * contains
+                    * startsWith
+                    * endsWith
+                    * Model.find({
+                      age: { '<': 30 }
+                    });
+                * Sort
+                    * ASC or DESC flag
+                    * Model.find({ where: { name: 'foo' }, sort: 'name DESC' });
+                    * Model.find({ where: { name: 'foo' }, sort: [{ name:  'ASC'}, { age: 'DESC' }] });
+            * Records
+                * it get back on find and finOne
+                * it return in dictionaries customToJSON model setting
+                * var orders = await Order.find()
+                    .populate('buyers')  // a "collection" association
+                    .populate('seller');  // a "model" association
+                * 
+        * Security
+            * CORS
+                * server accepting requested URL policies
+                    * npm i cors
+                    * const cors = require("cors")
+                    * app.use(cors({
+                        origin: "*(all) or http://127.0.0.1:5000" //accepting/allow URL ,
+                        methods: ["GET","POST"],
+                        credentials: true, //it is for corns
+                    }))
+                * In sails
+                    * all set-up in sails.config.security.cors
+                        * cors: {
+                          allRoutes: true,
+                          allowOrigins: '*',
+                          allowCredentials: false
+                        }
+                        * if you want to override cors global for a particular route
+                            * 'GET /videos': {
+                               action: 'video/find',
+                               cors: {
+                                 allowOrigins: ['http://example.com','https://api.example.com','http://blog.example.com:1337','https://foo.com:8888'],
+                                 allowCredentials: false
+                               }
+                            }
+                
 
 
                 
