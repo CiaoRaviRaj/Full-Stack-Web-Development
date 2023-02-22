@@ -202,9 +202,9 @@
 - localStronge
   • getItem('name')
   • setItem('name', 'hhhh');
-- objects
+* objects
 
-    - Object
+    * Object
     •
     • const person = {}
     • person {
@@ -246,7 +246,7 @@
                    perosnPrototype);
                • Object.hasOwn(peroson, 'name')
 
-    - Symbol ()
+    * Symbol ()
     • Uquic value always, no confilt , no
     override issues.
     • Id.toString()
@@ -275,7 +275,7 @@
 
         •
 
-    - Object prototypes
+    * Object prototypes
     • it is use for inherit properties from other
     • it used to add extra **proto** object value
     of a object
@@ -292,7 +292,7 @@
     it.
     •
     •
-    - Object-oriented programming
+    * Object-oriented programming
     •
     • class Person
     • Properties
@@ -539,3 +539,74 @@
             })
             .then(data => console.log(data));
             .catch(error => console.log('ERROR')) //Catch statement is going to run only fetch method get error(network error). It is not doing to anything about api status
+
+* javascript Browser Storage
+    * Cookies
+        * it available in all tab for a website
+        * manually set expires
+        * storage location Browser and Server
+        * send with requests
+        * To set
+            * document.cookie = 'name=Kyle; expires=' + newData(9999,0,1).toUTCString()
+        * To view
+            * log(document.cookie)
+    * Local Storage
+    * Session Storage
+        * it available in only particular tab for a website
+        * expire is on tab close
+        *
+* DOM Manipulation
+    * adding element to a page
+        * const body = document.body
+        * body.append("Hello World")
+            * you can add string 
+            * it can pass multiple element
+        * body.appendChild(node)
+            * it one at one time
+    * append a element
+        * const dic = document.createElement("div")
+            * it create a reference for a element
+        * dic.innerText = "Hello World"
+            * adding text  inside div element
+            * it return text like show in doc in DOC
+        * dic.textContent = "Hello world2"
+            * it preview total similar to indentation in code
+        * body.append(dic)
+    * adding HTML TAG 
+        * div.innerHtml = "<strong>Hello world</strong>"
+            *  it security problem
+            * anyone can manipulate  doc
+        * const strong = documentation.createElement("strong")
+            * strong.innerText = "Hello world"
+            * div.append(strong)
+            * body.append(div)
+    * remove Html
+        * dic.remove()
+        * body.removeChild(dic)
+            * from parent
+    * attributes
+        <span id="hi" title='title' data-test="it is test"> 
+        * const spanHi = document.querySelect("#hi")
+        * spanHi.getAttribute("id")
+        * spanHi.id()
+            * it also work
+        * spanHi.setAttribute("id" , "hello")
+        * spanHi.id = 'hello'
+        * spanHi.removeAttribute("id")
+
+        * spanHi.dataset()
+            * it is return object of data set
+            * spanHi.dataset.test()
+                * return test data value
+            * spanHi.dataset.test = "dddd"
+                * to change value
+    * class 
+        * spanHi.classList.add("hi1")
+        * spanHi.classList.remove("hi1")
+        * spanH1.classList.toggle("hi1")
+    * style
+        * spanHi.style.backgroundColor= "red"
+
+        
+* Intersection
+* 

@@ -587,3 +587,20 @@
                         * event listener in sync 
                         * javascript in multiple chuck
 
+* styling 
+    * Global style
+        * it is applicable'
+        * import it on _app.js
+        * all external style is also import here Like bootstrap
+
+    * component style
+        * Home.module.css
+        * import style from "../styles/Home.module.css"
+        * the style name colliding is not happened , all component same different instance of style object
+    * scss style
+        * similar like normal css file 
+    *  CSS in-line-style js support
+        * in line style
+            * style={{color: "hhhh"}}
+        * styled-component also used for in line style
+        

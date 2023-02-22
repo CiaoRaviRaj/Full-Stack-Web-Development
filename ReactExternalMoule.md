@@ -674,3 +674,60 @@
   * <ToastContainer /> at the end 
   * style can be do in it playground that they providing
     * theme: "dark"
+
+* # React propsType
+   * it is used to check type of props passing 
+   * it is just return all error in console.log
+   * not stop render
+   * npm i prop-types
+   * it is use to give prop type to a component
+   * for a component to apply prop type
+      * import PropTypes from 'prop-types'
+      * .... function component 
+      * ComponentName.propTypes ={
+         name : PropTypes.string
+         age: PropTypes.number.isRequired
+      }
+      * PropTypes Variants
+         * PropTypes.string
+         * PropTypes.number
+         * PropTypes.bool
+         * PropTypes.func
+         * PropTypes.object
+         * PropTypes.array
+         * PropTypes.node 
+            * // it is used to check props is renderable or not 
+            * like object is not renderable
+            * string 
+         * PropTypes.element 
+            * it is used to check props type a react component or not
+            * PropTypes.element.isRequired
+         * PropTypes.elementType
+            * it is used to check passing props is a type of react element
+            * as: PropTypes.elementType
+            * <component as={link} />
+         * PropTypes.any.isRequired
+            * 
+         * PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+            * it is used check from set of type
+         * PropTypes.oneOf(['loading', 'Ready'])
+            * it is used to check value pass in is one of given et values
+         * PropTypes.arrayOf(propsTypes.number)
+            * it is used to check value type of array pass in
+            * it is multiple check on combine 
+            * it is PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+            * 
+         * PropTypes.shape({
+            name: PropTypes.string,
+            age: PropTypes.number
+            })
+            * it is used to check shape of object 
+            * it is option check 
+         * PropTypes.exact({
+            name: PropTypes.string,
+            age: PropTypes.number
+            })
+            * it is used to check shape of object
+            * it is eject match of given shape
+         * 
+* 

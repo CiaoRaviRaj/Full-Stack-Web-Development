@@ -91,12 +91,12 @@
             * it return records where name = "Kyle" Or "Silly"
         * $nin => Not In that data set array
         * $exists => is that exists
-            * db.users.find({age: {$exist: true}})
+            * db.users.find({age: {$exists : true}})
             * it return where age field exists
             * it also return null value field 
             * because it check object_id field that age field or not . not check data type/ value
             * for not Exists
-                * db.users.find({age: {$exist: false}})
+                * db.users.find({age: {$exists : false}})
         
 
         * $and with complex query  
@@ -284,6 +284,7 @@
         * it is going to return as a properties on that schema
 
         * UserSchema.virtual('virtualFunctionName').get(function () {
+
             return `${this.name} << ${this.email}`
         })
         * // when we call find on records
