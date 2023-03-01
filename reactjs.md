@@ -646,13 +646,6 @@
 
 
 
-
-   
-
-      
-
-
-
    * useRef()
       * most miss Use and most flexible
 
@@ -947,7 +940,54 @@
             // it is going show latency in input value;
             }, [deferredInput]);
       }
-   
+      * use()
+         * it is extra fetching and conditional fetching with async behavior in react component
+         * it can use inside if statement
+         * Eg.
+            * export function Data({ url, shouldFetch}) {
+               let data = "default data"
+               if(shouldFetch) {
+                  data = use( fetch (url)).then(res => res,json())
+               }
+            }
+            * you can add loading effect by using  suspense
+            * parent component
+               * <suspense fallback={<div> loading... </div>}> 
+                  <Data url={url} shouldFetch={false}>
+               </suspense>
+               * suspense want until all child done with async use hooks call
+               * to handle error you can use error component to handle error from fetch 
+                  * <ErrorBoundary fallback={<div> Error</div>}>
+                     * <suspense fallback={<div> loading... </div>}> 
+                        <Data url={url} shouldFetch={false}>
+                     </suspense>
+                  </ErrorBoundary>
+      * useEffectEvent()
+         * it is work with useEffect()
+         * it limit dependency of useEffect
+         * useEffectEvent() is as event trigger after certain action
+         * it take the current value of  dependency value.
+         * eg. 
+            * export function ChatRoom ({url , loggingOption}) {
+               * const onConnected = useEffectEvent( url => {
+                  logConnection('Connected to ${url}', loggingOption)
+               }) 
+               * // normally console give error that make useEffect need to dependent on loggingOption also
+               * but by using useEffectEvent it make this function as event call it is only trigger when it call 
+               * so do not exist before event , all the value take and dependency value on event trigger
+
+               useEffect(() => {
+                  const room = connectToRoom(url)
+                  room.onConnected(() => { 
+                     // it is event to trigger onConnected function
+                     onConnected(url) 
+                  })
+                  return () => {
+                     room.disconnect()
+                  }
+                  
+               }, [url]) // useEffect only dependent on url change
+            }
    *  Optional hooks
       *  useLayoutEffect()
          *  similar to useEffect()
@@ -1210,9 +1250,9 @@
 
 * Coding mistake or improving your mistake
    *  useState hook
-        • Asked the question again, it really need 
+         *  Asked the question again, you really need 
            hook
-           • on form submission
+            *  on form submission
              • it need value once on submit
              • useRef instead
                 • const emailRef = useRef()
@@ -1220,7 +1260,7 @@
                 • onSubmit := 
                      email: emailRef.current.value
                 •     
-           • when you use previous value to change 
+            *  when you use previous value to change 
               new value,then you function version of 
               setuseState hook
               • setCount(count + amount) // wrong 
@@ -1229,10 +1269,10 @@
                    when State value change after next 
                    render
                     
-              • setCount( currentCount => {
+               * setCount( currentCount => {
                    return currentCount + amount 
                  })
-              • Count value is not change until next 
+               *  Count value is not change until next 
                  render is not completed.
                  So when you access count next of 
                  • setcount we do not get updates 
@@ -1245,8 +1285,8 @@
               • 
            • 
         • 
-    • useEffect
-        • problem 1 : takecare about data change and 
+      * useEffect
+         *  problem 1 : takecare about data change and 
           fetching data statement , it may cause 
           useless rendering 
              • useEffect(()=> {
@@ -1259,7 +1299,7 @@
                  It render data several time utill data fully    
                  loaded . So use get data after fetch 
                  instead
-           • Problem 2: On the time of redender 
+           *  Problem 2: On the time of redender 
                                  equality 
                 
                • UseSet(dark mode);

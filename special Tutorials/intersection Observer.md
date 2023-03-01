@@ -96,9 +96,10 @@
         * to stop change
 
     * you can use multi instance of observer object of that MutationObserver class
-    *
 
-* Resive Observer
+
+    
+* # Resive Observer
     * const box = document.querySelector(".box")
     * const container = document.querySelect(".container")
     * const observer = new ResizeObserver((entries) => {

@@ -456,7 +456,7 @@
 
 
 
-* #redux 
+* # redux 
   • Action
        File with export function
           export const actionName=(props)=>{
@@ -635,7 +635,7 @@
 
 #fetchAPI
 
-* #Formik and Yup
+* # Formik and Yup
   * Formik is use to form handling
     * import {useFormik} from "formik"
     * const Formik = useFormik(
@@ -666,7 +666,7 @@
       validationSchema: signUpSchema
     })
 
-* #react-toastify
+* # react-toastify
   * npm i react-toastify
   * import { ToastContainer , toast} from "react-toastify"
   * toast : for individual notification
@@ -730,4 +730,228 @@
             * it is used to check shape of object
             * it is eject match of given shape
          * 
-* 
+* # React Query ( TanStack Query )
+  * What And Why
+    * it is Powerful asynchronous state management for TS/JS, React, Solid, Vue and Svelte
+    * Why
+      * automated and easy to manager fetching API data ( fetching and validation)
+      * It handles caching, background updates and stale data out of the box with zero-configuration.
+      * it use async and await (promise) 
+      * it is route specific , it refetch the data every time we hit the page and revalidate the data
+  * Setup
+    * npm i @tanstack/react-query
+    * npm i @tanstack/react-query-devtools
+
+    * wrap with query client provider
+      * import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+      * import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+      * const queryClient = new QueryClient()
+      * ...
+      * <QueryClientProvider client={queryClient}>
+          <App />
+          <ReactQueryDevtools />
+        </QueryClientProvider>
+      * 
+  * Query and Mutation Example 
+      * Query is getting some data (get posts)
+        * import { useQuery } from "@tanstack/react-query"
+        * const POSTS = [
+          { id: 1, title: "Post 1"},
+          { id: 2, title: "Post 2"}
+        ]
+        * function App() {
+          * const postsQuery = useQuery({
+            * queryKey: ["posts"] // quinic identified
+            * queryFu: () => waitFunction(1000).then(() => [...POSTS]) 
+              * // need to return a promise 
+              * // it make multiple retry then it return error state
+            * 
+          })
+          * if( postsQuery.isLoading) return <h1> Loading...</h1>
+          * if( postsQuery.isError) return <pre>{JSON.stringify(postsQuery.error)}</pre> 
+
+          * return (
+            <div> 
+              {postsQuery.data.map(post => {
+                <div key={post.id}> {post.title}</div>
+              })}
+            </div>
+          )
+        }
+      * Mutation is changing some data (create post)
+        * const queryClient = useQueryClient() 
+          * // this hook use previously used queryClient instance in index.js file
+        * const newPostMutation = useMutation({
+          mutationFn: title => {
+            return waitFunction(1000).then(() => 
+              POSTS.push({id: crypto.randomUUID(), title})
+            )
+          }
+          onSuccess: () => {
+            queryClient.invalidateQueries(["post"])
+          }
+        })
+
+        * return (
+          <div> 
+              {postsQuery.data.map(post => {
+                <div key={post.id}> {post.title}</div>
+              })}
+              * <button disabled={newPostMutation.isLoading} onClick={() => newPostMutation.mutate("title value")}>
+                Add new Post
+              </button>
+            </div>
+        )
+  * Query in Deep
+      * queryKey
+        * // make query route 
+        * // /posts ["posts"]
+        * // /posts/1 ["posts" , post.id]
+        * // /posts?authorId=1 ["posts", { authorId: 1}]
+        * // /posts/2/comments ["posts", post.id, "comments"]
+
+      * queryFn
+        * queryFn: (obj) => log(obj)
+          * obj
+            * {
+              meta: 
+              pageParam
+              queryKey: ["posts"] // it is most important
+              signal:(...)
+            }
+            * we can access queryKey in queryFn 
+              * queryFn: ({ queryKey }) => log(queryKey) 
+      * const postsQuery = useQuery({...})
+        * postsQuery.
+          * status = "error" | "loading" | "success"
+          * isError
+          * isLoading
+          * 
+      * It re-fetch data every time and util it show cached (pre-fetched) data . After fetching down it updated the data
+        * postsQuery.fetchStatus === "fetching" | "idle" | "paused" (error on fetching (network error))
+        * to change this default fetching behavior
+          * go to index.js file
+            * const queryClient = new QueryClient({
+              defaultOptions: { queries: { stableTime: 1000 * 60 * 5}}
+            })
+            * stableTime set a time limit after ward it do refetch data
+          * or you can add it on 
+            * const postsQuery = useQuery({
+              ....
+              stableTime: 1000
+            })
+        * to matually fetch after a certain time limit
+          * const postsQuery = useQuery({
+              ....
+              refetchInterval: 1000
+            })
+      * How to do query after another query
+        * const postQuery = useQuery({
+          ....
+        })
+        * const userQuery = useQuery({
+          * queryKey: ["users", postQuery?.data?.userId]
+            * // it need to have postQuery?.data?.userId before run query
+          * enabled: postQuery?.data?.userId != null, 
+
+            * // it run if postQuery?.data?.userId != null is return true another wise it do not run that query
+
+          * queryFn: () => getUser(postQuery.data.userId)
+        })
+  * Mutation in Depp
+
+      * const queryClient = useQueryClient()
+      * const createPostMutation = useMutation ( {
+        * mutationFn: (data) => {
+          createPost({data})
+        }
+        * onSuccess: (data, variables, context) => {
+          log(context)
+          * manually update query data
+            * queryClient.setQueryData(["posts", data.id], {newPostData})
+            *  queryClient.setQueryData(["posts", data.id], (oldData) => {
+              operation using oldData
+            })
+          * queryClient.invalidateQueries(["posts"], { exact: true})
+            * it invalidate all ["posts" ] related query
+            * exact : true 
+              * it make invalidate query only exact "posts"
+        }
+        * onError: (error, variables, context)
+        * onSettled: (data, error , variable, context)
+          * final state
+        * onMutate : (variables) => {
+          * it run before mutationFn
+          return {h1 : "Bye"} // this is return as context value
+        }
+        * retry : 3
+          * it make run 3 
+      })
+      * createPostMutation.
+        * createPostMutation.status === "error" | "loading" | "success" | "idle"
+        * createPostMutation.mutate({data} , {onError, onSuccess})
+          * it call mutate function
+          * you can give you own onError func on call also
+       * createPostMutation.mutateAsync().then(() => )
+          *  it can do before mutation data
+  * pagination
+      * const { status , error , data , isPreviousData} = useQuery({
+        queryKey: ["posts" , {page}]
+        * keepPreviousData: true,
+          * it show previous data util it completed query function
+        queryFn: () => getPostsPagination(page)
+      })
+      * isPreviousData 
+        * it has previous data
+  * InfinityScrolling
+      * const { status , error , data , isFetchingNextPage , hasNextPage,hasPreviousPage, fetchNextPage, fetchPreviousPage} = useInfiniteQuery({
+        * queryKey: ["posts" , "infinite"]
+        * getPreviousPageParam : ....
+        * getNextPageParam: prevData => prevData.nextPage,
+          * it return next page 
+          * it call before queryFn
+        * queryFn: ({ pageParam = 1}) => getPostsPaginated(pageParam)
+      })
+      * fetchNextPage is a function that call where we want to call fetch next data
+      * isFetchingNextPage ? " loading" : "load More"
+      * hasNextPage
+        * it true if you has next page 
+        * false it you have not next page
+      * data
+        * data.pages.map
+        * data.pageParam
+    
+    
+  * useQueries()
+      * it run multiple data
+      * const queries = useQueries({
+        queries: (postQuery?.data ?? []).map( post => {
+          return {
+            queryKey: ["posts", post.id]
+            queryFn: () => getPost(post.id)
+          }
+        })
+      })
+      * log(queries.map(q => q.data))
+    * pre fetch data
+      * const queryClient = useQueryClient()
+      * function onHoverPostOneLink () {
+        queryClient.prefetchQuery({
+          queryKey: ["posts", 1],
+          queryFn: () => getPost(1)
+        })
+      }
+  * placeholderData / initialData
+      * const postsQuery = useQuery({
+            * queryKey: ["posts"] // quinic identified
+            * initialData: [{}]
+            * placeholderData: [{}]
+            * queryFu: () => waitFunction(1000).then(() => [...POSTS]) 
+              * // need to return a promise 
+              * // it make multiple retry then it return error state
+            * 
+          })
+      * for first fetch initial Data value show 
+      * for first time it show and then after when data fetch it show fetched data
+
+* # 
