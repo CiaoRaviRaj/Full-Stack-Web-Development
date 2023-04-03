@@ -129,6 +129,7 @@
                 *   port: '27017'
                 *   host: 'localhost'
                 *   database: 'nameofDb' //set The db before
+                * url : "mongodb+srv://raviraj:Raviraj123@cluster0.dgrchyp.mongodb.net/collectionsName"
             }
             
         * setup model for it

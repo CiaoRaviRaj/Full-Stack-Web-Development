@@ -538,7 +538,7 @@
       * Two Part
          * Provider component 
             * it provide state value to their children and their children and their children ...soon
-            * export const ThemeContext = React.   createContext();
+            * export const ThemeContext = React.createContext();
 
             * const [value, setValue] = useState(true);
             * const handleClick = (value) => {
@@ -550,7 +550,7 @@
 
                   All Component That use That Values
                   <button onCLick>
-               </ThemeContext.Provider value={}>
+               </ThemeContext.Provider>
          * consumer component
             * It consumes the state value that provided by context.
 
