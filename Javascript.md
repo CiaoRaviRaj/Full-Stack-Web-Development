@@ -75,12 +75,14 @@
                 * index with all properties.
                  value
             * for ...in ... // Return index value. With every thing
+        * array.indexOf
         * multidimensional arrays
             * let matrix = [
                   [],
                   [],
              ];
             * matrix[1][1];
+
         * toString
             •
         * comparing array with === not ==
